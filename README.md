@@ -1,5 +1,9 @@
 # Reserp for JavaScript and TypeScript
 
+[![npm version](https://img.shields.io/npm/v/reserp.svg)](https://www.npmjs.com/package/reserp)
+[![CI](https://github.com/reserp-ai/reserp-js/actions/workflows/ci.yml/badge.svg)](https://github.com/reserp-ai/reserp-js/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 The official JavaScript and TypeScript SDK for the [Reserp Google Search API](https://reserp.ai/docs).
 
 Reserp returns the visible result blocks from Google Search through one stable JSON schema. Every account includes 5,000 free requests each month, with no credit card required.
