@@ -1,5 +1,5 @@
 {
-  "name": "reserp",
+  "name": "@reserp/sdk",
   "version": "0.1.0",
   "description": "Official JavaScript and TypeScript SDK for the Reserp Google Search API",
   "license": "MIT",

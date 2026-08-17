@@ -6,7 +6,7 @@
 
 # Reserp JavaScript and TypeScript SDK
 
-[![npm version](https://img.shields.io/npm/v/reserp.svg)](https://www.npmjs.com/package/reserp)
+[![npm version](https://img.shields.io/npm/v/%40reserp%2Fsdk.svg)](https://www.npmjs.com/package/@reserp/sdk)
 [![CI](https://github.com/reserp-ai/reserp-js/actions/workflows/ci.yml/badge.svg)](https://github.com/reserp-ai/reserp-js/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
@@ -27,7 +27,7 @@ Retrieve structured Google Search results from Node.js through one stable JSON s
 ## Installation
 
 ```bash
-npm install reserp
+npm install @reserp/sdk
 ```
 
 Node.js 20 or later is required. This package has zero runtime dependencies.
@@ -35,7 +35,7 @@ Node.js 20 or later is required. This package has zero runtime dependencies.
 ## Quick start
 
 ```js
-import { Reserp } from "reserp";
+import { Reserp } from "@reserp/sdk";
 
 const apiKey = process.env.RESERP_API_KEY;
 
@@ -109,7 +109,7 @@ All Google URL parameters pass through unchanged except parameters documented as
 API failures throw `ReserpAPIError` with the stable public error code and billing state:
 
 ```js
-import { ReserpAPIError } from "reserp";
+import { ReserpAPIError } from "@reserp/sdk";
 
 try {
   await reserp.search({ query: "photonic computing" });
