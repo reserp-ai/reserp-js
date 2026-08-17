@@ -1,9 +1,12 @@
 {
   "name": "reserp",
   "version": "0.1.0",
-  "description": "Official TypeScript SDK for the Reserp Google Search API",
+  "description": "Official JavaScript and TypeScript SDK for the Reserp Google Search API",
   "license": "MIT",
-  "author": "Reserp",
+  "author": {
+    "name": "Reserp",
+    "url": "https://reserp.ai"
+  },
   "type": "module",
   "sideEffects": false,
   "main": "./dist/index.cjs",
@@ -43,11 +46,16 @@
   "homepage": "https://reserp.ai/docs",
   "keywords": [
     "reserp",
-    "google",
-    "search",
+    "google-search",
+    "google-search-api",
     "serp",
-    "api",
-    "typescript"
+    "serp-api",
+    "search-api",
+    "api-client",
+    "sdk",
+    "javascript",
+    "typescript",
+    "nodejs"
   ],
   "scripts": {
     "build": "tsup",

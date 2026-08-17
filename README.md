@@ -1,12 +1,28 @@
-# Reserp for JavaScript and TypeScript
+<p align="center">
+  <a href="https://reserp.ai">
+    <img src="https://reserp.ai/icon-512.png" alt="Reserp Google Search API" width="112" height="112">
+  </a>
+</p>
+
+# Reserp JavaScript and TypeScript SDK
 
 [![npm version](https://img.shields.io/npm/v/reserp.svg)](https://www.npmjs.com/package/reserp)
 [![CI](https://github.com/reserp-ai/reserp-js/actions/workflows/ci.yml/badge.svg)](https://github.com/reserp-ai/reserp-js/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-The official JavaScript and TypeScript SDK for the [Reserp Google Search API](https://reserp.ai/docs).
+The official JavaScript and TypeScript SDK for [Reserp](https://reserp.ai), a Google Search API for developers and AI agents.
 
-Reserp returns the visible result blocks from Google Search through one stable JSON schema. Every account includes 5,000 free requests each month, with no credit card required.
+Retrieve structured Google Search results from Node.js through one stable JSON schema. Every Reserp account includes 5,000 free requests each month, with no credit card required.
+
+[Website](https://reserp.ai) · [API documentation](https://reserp.ai/docs) · [OpenAPI 3.1](https://reserp.ai/openapi.json) · [Pricing](https://reserp.ai/pricing)
+
+## Features
+
+- Structured Google Search results through a stable, documented API.
+- First-class TypeScript types with JavaScript, ESM, and CommonJS support.
+- One-based pagination plus support for authoritative pagination URLs.
+- Configurable retries, timeouts, and standard `AbortSignal` cancellation.
+- Zero runtime dependencies.
 
 ## Installation
 
@@ -18,11 +34,17 @@ Node.js 20 or later is required. This package has zero runtime dependencies.
 
 ## Quick start
 
-```ts
+```js
 import { Reserp } from "reserp";
 
+const apiKey = process.env.RESERP_API_KEY;
+
+if (!apiKey) {
+  throw new Error("RESERP_API_KEY is not set");
+}
+
 const reserp = new Reserp({
-  apiKey: process.env.RESERP_API_KEY!,
+  apiKey,
 });
 
 const response = await reserp.search({
@@ -42,7 +64,7 @@ Create an API key in the [Reserp dashboard](https://reserp.ai/dashboard). Keep A
 
 `page` is one-based, so you do not need to calculate Google's `start` offsets:
 
-```ts
+```js
 const secondPage = await reserp.search({
   query: "photonic computing",
   page: 2,
@@ -51,7 +73,7 @@ const secondPage = await reserp.search({
 
 You can also follow the authoritative pagination URL returned by the API:
 
-```ts
+```js
 const first = await reserp.search({ query: "photonic computing" });
 const second = await reserp.nextPage(first);
 ```
@@ -62,7 +84,7 @@ Do not derive pagination from `results.length`. A response can contain organic l
 
 Use `params` for additional Google parameters such as `tbs` and `tbm`:
 
-```ts
+```js
 const news = await reserp.search({
   query: "semiconductor manufacturing",
   params: {
@@ -74,7 +96,7 @@ const news = await reserp.search({
 
 For complete control, submit a full Google Search URL:
 
-```ts
+```js
 const response = await reserp.searchUrl(
   "https://www.google.com/search?q=semiconductor+manufacturing&gl=us&hl=en&tbs=qdr:w",
 );
@@ -86,7 +108,7 @@ All Google URL parameters pass through unchanged except parameters documented as
 
 API failures throw `ReserpAPIError` with the stable public error code and billing state:
 
-```ts
+```js
 import { ReserpAPIError } from "reserp";
 
 try {
@@ -102,14 +124,14 @@ The SDK retries retryable API responses up to two times by default, respecting `
 
 Configure retries and per-attempt timeouts globally or per request:
 
-```ts
-const reserp = new Reserp({
-  apiKey: process.env.RESERP_API_KEY!,
+```js
+const configuredReserp = new Reserp({
+  apiKey,
   maxRetries: 1,
   timeoutMs: 20_000,
 });
 
-await reserp.search({
+await configuredReserp.search({
   query: "photonic computing",
   maxRetries: 0,
   timeoutMs: 10_000,
