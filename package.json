@@ -1,0 +1,71 @@
+{
+  "name": "reserp",
+  "version": "0.1.0",
+  "description": "Official TypeScript SDK for the Reserp Google Search API",
+  "license": "MIT",
+  "author": "Reserp",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "overrides": {
+    "esbuild": "^0.28.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reserp-ai/reserp-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/reserp-ai/reserp-js/issues"
+  },
+  "homepage": "https://reserp.ai/docs",
+  "keywords": [
+    "reserp",
+    "google",
+    "search",
+    "serp",
+    "api",
+    "typescript"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "check": "npm run lint && npm run typecheck && npm test && npm run build",
+    "lint": "eslint .",
+    "prepack": "npm run build",
+    "prepublishOnly": "npm run check",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.2.0",
+    "eslint": "^10.8.1",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.67.0",
+    "vitest": "^4.1.10"
+  }
+}
