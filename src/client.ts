@@ -29,7 +29,7 @@ const ERROR_CODES = new Set<ReserpErrorCode>([
   "service_unavailable",
 ]);
 
-export const VERSION = "0.1.0";
+export const VERSION = "0.1.2";
 
 export class Reserp {
   readonly #apiKey: string;
