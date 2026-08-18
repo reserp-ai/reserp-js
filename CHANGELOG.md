@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - Return the native Fetch `Response`, including its status, headers, and exact API payload.
 - Pass native Fetch request controls through without adding SDK retry, backoff, or timeout policy.
 - Removed URL construction, client-side URL validation, pagination orchestration, response validation, and custom SDK errors.
+- Documented direct `start` offsets for asynchronous pagination and `nextUrl` as a sequential convenience.
 
 ## [0.1.2] - 2026-08-18
 
@@ -24,7 +25,7 @@ All notable changes to this project will be documented in this file.
 - One-based pagination and raw Google Search URL support.
 - Safe retries, timeouts, and abort signals.
 
-[0.2.0]: https://github.com/reserp-ai/reserp-js/compare/v0.1.2...HEAD
+[0.2.0]: https://github.com/reserp-ai/reserp-js/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/reserp-ai/reserp-js/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/reserp-ai/reserp-js/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/reserp-ai/reserp-js/releases/tag/v0.1.0

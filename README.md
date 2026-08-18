@@ -125,9 +125,20 @@ Use either interface according to your application. Both expose the same Google 
 
 ## Results and pagination
 
-The API preserves visible result blocks and their order rather than forcing every Google SERP feature into a flat organic-results model. A successful response can contain organic listings, news, carousels, sitelinks, and nested `children`.
+Pagination uses Google's organic-result offset, not the number of URLs in `results`. A response can contain URLs from many visible result types—including organic listings, news, carousels, sitelinks, and nested result blocks—so never derive the next offset from `results.length`.
 
-Follow the API-provided `pagination.nextUrl` for the next page instead of deriving pagination from `results.length`:
+The `start` parameter selects the page by organic-result offset. Omit it or use `0` for the first page, `10` for the second, `20` for the third, and continue in increments of 10. Any other value returns a non-billable `400 invalid_request` response.
+
+Clients fetching pages independently or asynchronously can set `start` directly in each submitted Google Search URL:
+
+```js
+const thirdPageResponse = await reserp.search({
+  url: "https://www.google.com/search?q=photonic+computing&gl=us&hl=en&start=20",
+});
+const thirdPage = await thirdPageResponse.json();
+```
+
+`pagination.nextUrl` is provided as a convenience for clients advancing sequentially from a completed response:
 
 ```js
 if (data.ok) {

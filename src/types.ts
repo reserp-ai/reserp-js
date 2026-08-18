@@ -15,8 +15,11 @@ export interface Result {
 }
 
 export interface Pagination {
+  /** Current Google organic-result offset. */
   start: number;
+  /** Next organic-result offset, always start plus 10. */
   nextStart: number;
+  /** Submitted URL with start set to nextStart for sequential traversal. */
   nextUrl: string;
 }
 
