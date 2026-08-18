@@ -16,7 +16,7 @@ The official minimal JavaScript and TypeScript client for [Reserp](https://reser
 
 Reserp returns visible Google Search result blocks as structured JSON, including organic listings, news, carousels, sitelinks, pagination, and nested results in Google's response order. Start for free with no credit card required.
 
-[Website](https://reserp.ai) · [API documentation](https://reserp.ai/docs) · [OpenAPI 3.1](https://reserp.ai/openapi.json) · [Postman](https://www.postman.com/reserp-ai/reserp-google-search-api/overview) · [Pricing](https://reserp.ai/pricing)
+[Website](https://reserp.ai) · [API documentation](https://reserp.ai/docs) · [OpenAPI 3.1](https://reserp.ai/openapi.json) · [Postman](https://documenter.getpostman.com/view/57501126/2sBYArSrqS) · [Pricing](https://reserp.ai/pricing)
 
 ## Design
 
@@ -170,7 +170,7 @@ The API response is authoritative. Automatically retry only when `retryable` is 
 
 - [Google Search API documentation](https://reserp.ai/docs)
 - [OpenAPI 3.1 document](https://reserp.ai/openapi.json)
-- [Postman workspace](https://www.postman.com/reserp-ai/reserp-google-search-api/overview)
+- [Postman API documentation](https://documenter.getpostman.com/view/57501126/2sBYArSrqS)
 - [Python client on GitHub](https://github.com/reserp-ai/reserp-python)
 - [Python package on PyPI](https://pypi.org/project/reserp/)
 - [Plans and pricing](https://reserp.ai/pricing)

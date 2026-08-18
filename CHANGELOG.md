@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.1] - 2026-08-18
+
+- Replaced Postman API Network workspace links with the formally published Reserp API documentation.
+
 ## [0.2.0] - 2026-08-18
 
 - Reduced the SDK to a transparent, single-request wrapper over `POST /v1/serp`.
@@ -25,6 +29,7 @@ All notable changes to this project will be documented in this file.
 - One-based pagination and raw Google Search URL support.
 - Safe retries, timeouts, and abort signals.
 
+[0.2.1]: https://github.com/reserp-ai/reserp-js/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/reserp-ai/reserp-js/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/reserp-ai/reserp-js/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/reserp-ai/reserp-js/compare/v0.1.0...v0.1.1
