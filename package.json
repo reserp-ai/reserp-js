@@ -1,7 +1,7 @@
 {
   "name": "@reserp/sdk",
-  "version": "0.1.2",
-  "description": "Official JavaScript and TypeScript SDK for the Reserp Google Search API",
+  "version": "0.2.0",
+  "description": "Official minimal JavaScript and TypeScript SDK for the Reserp Google Search API and SERP API",
   "license": "MIT",
   "author": {
     "name": "Reserp",
@@ -48,9 +48,12 @@
     "reserp",
     "google-search",
     "google-search-api",
+    "google-serp-api",
     "serp",
     "serp-api",
+    "serp-data",
     "search-api",
+    "search-results-api",
     "api-client",
     "sdk",
     "javascript",

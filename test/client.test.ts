@@ -1,11 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import {
-  Reserp,
-  ReserpAbortError,
-  ReserpAPIError,
-  ReserpTimeoutError,
-  VERSION,
-} from "../src/index.js";
+import { Reserp } from "../src/index.js";
 import type { SearchResponse } from "../src/index.js";
 
 const SUCCESS: SearchResponse = {
@@ -29,35 +23,34 @@ function jsonResponse(body: unknown, status = 200, headers?: HeadersInit): Respo
 }
 
 describe("Reserp", () => {
-  it("sends the documented API request", async () => {
-    const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(jsonResponse(SUCCESS));
+  it("sends the exact API body and returns the native response", async () => {
+    const nativeResponse = jsonResponse(SUCCESS);
+    const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(nativeResponse);
     const client = new Reserp({ apiKey: "test_api_key", fetch });
+    const controller = new AbortController();
+    const request = { url: "not-validated-by-the-sdk" };
 
-    const response = await client.search({ query: "reserp", gl: "us" });
+    const response = await client.search(request, {
+      headers: { authorization: "Bearer ignored", "x-request-id": "job-123" },
+      redirect: "manual",
+      signal: controller.signal,
+    });
 
-    expect(response).toEqual(SUCCESS);
+    expect(response).toBe(nativeResponse);
+    expect(response.bodyUsed).toBe(false);
+    await expect(response.json()).resolves.toEqual(SUCCESS);
     expect(fetch).toHaveBeenCalledOnce();
     const [url, init] = fetch.mock.calls[0]!;
     expect(url).toBe("https://api.reserp.ai/v1/serp");
     expect(init?.method).toBe("POST");
     expect(new Headers(init?.headers).get("authorization")).toBe("Bearer test_api_key");
-    expect(new Headers(init?.headers).get("x-reserp-client")).toBe(`reserp-js/${VERSION}`);
-    expect(JSON.parse(String(init?.body))).toEqual({
-      url: "https://www.google.com/search?q=reserp&gl=us",
-    });
+    expect(new Headers(init?.headers).get("x-request-id")).toBe("job-123");
+    expect(init?.redirect).toBe("manual");
+    expect(init?.signal).toBe(controller.signal);
+    expect(JSON.parse(String(init?.body))).toEqual(request);
   });
 
-  it("uses the API-provided next URL for pagination", async () => {
-    const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(jsonResponse(SUCCESS));
-    const client = new Reserp({ apiKey: "test_api_key", fetch });
-
-    await client.nextPage(SUCCESS);
-
-    const [, init] = fetch.mock.calls[0]!;
-    expect(JSON.parse(String(init?.body))).toEqual({ url: SUCCESS.pagination.nextUrl });
-  });
-
-  it("throws a typed API error", async () => {
+  it("returns API errors unchanged and never retries", async () => {
     const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(
       jsonResponse(
         { ok: false, error: "rate_limited", retryable: true, billed: false },
@@ -65,78 +58,31 @@ describe("Reserp", () => {
         { "retry-after": "15" },
       ),
     );
-    const client = new Reserp({ apiKey: "test_api_key", fetch, maxRetries: 0 });
+    const client = new Reserp({ apiKey: "test_api_key", fetch });
 
-    await expect(client.search({ query: "reserp" })).rejects.toMatchObject({
-      name: "ReserpAPIError",
-      status: 429,
-      code: "rate_limited",
+    const response = await client.search({
+      url: "https://www.google.com/search?q=reserp",
+    });
+
+    expect(response.status).toBe(429);
+    expect(response.headers.get("retry-after")).toBe("15");
+    await expect(response.json()).resolves.toEqual({
+      ok: false,
+      error: "rate_limited",
       retryable: true,
       billed: false,
-      retryAfterMs: 15_000,
     });
-  });
-
-  it("retries retryable errors only when funding was not consumed", async () => {
-    const fetch = vi
-      .fn<typeof globalThis.fetch>()
-      .mockResolvedValueOnce(
-        jsonResponse(
-          { ok: false, error: "service_unavailable", retryable: true, billed: false },
-          503,
-          { "retry-after": "0" },
-        ),
-      )
-      .mockResolvedValueOnce(jsonResponse(SUCCESS));
-    const client = new Reserp({ apiKey: "test_api_key", fetch, maxRetries: 1 });
-
-    await expect(client.search({ query: "reserp" })).resolves.toEqual(SUCCESS);
-    expect(fetch).toHaveBeenCalledTimes(2);
-  });
-
-  it("does not retry an error that was billed", async () => {
-    const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(
-      jsonResponse(
-        { ok: false, error: "service_unavailable", retryable: true, billed: true },
-        503,
-      ),
-    );
-    const client = new Reserp({ apiKey: "test_api_key", fetch, maxRetries: 2 });
-
-    await expect(client.search({ query: "reserp" })).rejects.toBeInstanceOf(ReserpAPIError);
     expect(fetch).toHaveBeenCalledOnce();
   });
 
-  it("supports request timeouts", async () => {
-    vi.useFakeTimers();
-    const fetch = vi.fn<typeof globalThis.fetch>().mockImplementation(
-      (_url, init) =>
-        new Promise((_resolve, reject) => {
-          init?.signal?.addEventListener("abort", () => reject(new DOMException("Aborted", "AbortError")));
-        }),
-    );
-    const client = new Reserp({ apiKey: "test_api_key", fetch, timeoutMs: 10 });
-    const request = client.search({ query: "reserp" });
-    const rejection = expect(request).rejects.toBeInstanceOf(ReserpTimeoutError);
-
-    await vi.advanceTimersByTimeAsync(10);
-    await rejection;
-    vi.useRealTimers();
-  });
-
-  it("supports caller abort signals", async () => {
-    const controller = new AbortController();
-    const fetch = vi.fn<typeof globalThis.fetch>().mockImplementation(
-      (_url, init) =>
-        new Promise((_resolve, reject) => {
-          init?.signal?.addEventListener("abort", () => reject(new DOMException("Aborted", "AbortError")));
-        }),
-    );
+  it("passes transport failures through unchanged", async () => {
+    const failure = new TypeError("network unavailable");
+    const fetch = vi.fn<typeof globalThis.fetch>().mockRejectedValue(failure);
     const client = new Reserp({ apiKey: "test_api_key", fetch });
-    const request = client.search({ query: "reserp", signal: controller.signal });
-    const rejection = expect(request).rejects.toBeInstanceOf(ReserpAbortError);
 
-    controller.abort();
-    await rejection;
+    await expect(
+      client.search({ url: "https://www.google.com/search?q=reserp" }),
+    ).rejects.toBe(failure);
+    expect(fetch).toHaveBeenCalledOnce();
   });
 });

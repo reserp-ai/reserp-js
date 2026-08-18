@@ -36,40 +36,26 @@ export interface ErrorResponse {
   billed: boolean;
 }
 
-export type GoogleParameterValue = string | number | null | undefined;
-
-export interface SearchInput {
-  /** The Google search query. */
-  query: string;
-  /** Two-letter Google country code, such as `us` or `ae`. */
-  gl?: string;
-  /** Google interface language, such as `en` or `ja`. */
-  hl?: string;
-  /** One-based results page. Page 1 omits `start`; page 2 uses `start=10`. */
-  page?: number;
-  /** Additional Google parameters, such as `tbs` or `tbm`. */
-  params?: Readonly<Record<string, GoogleParameterValue>>;
+export interface SearchRequest {
+  /** Complete Google Search URL accepted by the public API. */
+  url: string;
 }
 
-export interface RequestOptions {
-  /** Abort the request with a standard AbortSignal. */
-  signal?: AbortSignal | undefined;
-  /** Per-attempt timeout in milliseconds. Use 0 to disable the timeout. */
-  timeoutMs?: number | undefined;
-  /** Number of retries after the initial request. */
-  maxRetries?: number | undefined;
-}
+export type APIResponse = SearchResponse | ErrorResponse;
 
-export type SearchOptions = SearchInput & RequestOptions;
+/** Native Fetch options, excluding the method and JSON body owned by this endpoint. */
+export type SearchRequestOptions = Omit<RequestInit, "body" | "method">;
+
+/** The native Fetch Response with a typed API JSON body. */
+export interface ReserpResponse extends Response {
+  clone(): ReserpResponse;
+  json(): Promise<APIResponse>;
+}
 
 export interface ReserpOptions {
   apiKey: string;
-  /** Override only for testing or an explicitly supported Reserp endpoint. */
-  baseUrl?: string;
-  /** Default per-attempt timeout in milliseconds. Defaults to 30 seconds. */
-  timeoutMs?: number;
-  /** Default retry count. Defaults to 2. */
-  maxRetries?: number;
-  /** Custom Fetch implementation, primarily for testing. */
+  /** Override the complete API endpoint, primarily for testing. */
+  endpoint?: string | URL;
+  /** Use a caller-supplied Fetch-compatible transport. */
   fetch?: typeof globalThis.fetch;
 }

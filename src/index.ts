@@ -1,22 +1,13 @@
-export { Reserp, VERSION } from "./client.js";
-export {
-  ReserpAbortError,
-  ReserpAPIError,
-  ReserpConnectionError,
-  ReserpError,
-  ReserpTimeoutError,
-  ReserpUnexpectedResponseError,
-} from "./errors.js";
+export { Reserp } from "./client.js";
 export type {
+  APIResponse,
   ErrorResponse,
-  GoogleParameterValue,
   Pagination,
-  RequestOptions,
   ReserpErrorCode,
   ReserpOptions,
+  ReserpResponse,
   Result,
-  SearchInput,
-  SearchOptions,
+  SearchRequest,
+  SearchRequestOptions,
   SearchResponse,
 } from "./types.js";
-export { buildGoogleSearchUrl, validateGoogleSearchUrl } from "./url.js";
