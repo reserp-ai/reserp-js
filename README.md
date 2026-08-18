@@ -12,7 +12,7 @@
 
 The official JavaScript and TypeScript SDK for [Reserp](https://reserp.ai), a Google Search API for developers and AI agents.
 
-Retrieve structured Google Search results from Node.js through one stable JSON schema. Every Reserp account includes 5,000 free requests each month, with no credit card required.
+Retrieve structured Google Search results from Node.js through one stable JSON schema. Start for free with no credit card required.
 
 [Website](https://reserp.ai) · [API documentation](https://reserp.ai/docs) · [OpenAPI 3.1](https://reserp.ai/openapi.json) · [Pricing](https://reserp.ai/pricing)
 
