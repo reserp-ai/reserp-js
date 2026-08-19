@@ -9,8 +9,11 @@ export type ReserpErrorCode =
   | "service_unavailable";
 
 export interface Result {
+  /** Visible, non-empty text for the result block, joined with newlines. Omitted when absent. */
   text?: string;
+  /** Normalized external URL when present. */
   url?: string;
+  /** Nested blocks retained when flattening would lose a URL boundary or descendant content. */
   children?: Result[];
 }
 

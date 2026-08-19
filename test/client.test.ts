@@ -6,7 +6,7 @@ const SUCCESS: SearchResponse = {
   ok: true,
   url: "https://www.google.com/search?q=reserp",
   finalUrl: "https://www.google.com/search?q=reserp",
-  results: [{ text: "Reserp", url: "https://reserp.ai" }],
+  results: [{ url: "https://reserp.ai" }],
   pagination: {
     start: 0,
     nextStart: 10,
@@ -71,6 +71,29 @@ describe("Reserp", () => {
       error: "rate_limited",
       retryable: true,
       billed: false,
+    });
+    expect(fetch).toHaveBeenCalledOnce();
+  });
+
+  it("preserves retryable errors when billing already settled", async () => {
+    const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(
+      jsonResponse(
+        { ok: false, error: "search_failed", retryable: true, billed: true },
+        502,
+      ),
+    );
+    const client = new Reserp({ apiKey: "test_api_key", fetch });
+
+    const response = await client.search({
+      url: "https://www.google.com/search?q=reserp",
+    });
+
+    expect(response.status).toBe(502);
+    await expect(response.json()).resolves.toEqual({
+      ok: false,
+      error: "search_failed",
+      retryable: true,
+      billed: true,
     });
     expect(fetch).toHaveBeenCalledOnce();
   });
