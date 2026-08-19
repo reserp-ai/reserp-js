@@ -164,7 +164,7 @@ API errors use stable JSON fields:
 }
 ```
 
-The API response is authoritative. Automatically retry only when `retryable` is `true` and `billed` is `false`, respect `Retry-After` when present, and avoid blindly retrying an ambiguous transport failure whose billing outcome is unknown. The SDK does not make those decisions.
+The API response is authoritative. Automatically retry only when `retryable` is `true`. For `429`, wait for the number of seconds in `Retry-After`; for other retryable errors, use exponential backoff with jitter. `billed` only confirms whether billing settled before the error response; it does not override `retryable`. Avoid blindly retrying an ambiguous transport failure whose billing outcome is unknown. The SDK does not make those decisions.
 
 ## API resources
 
