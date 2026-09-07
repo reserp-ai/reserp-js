@@ -10,26 +10,16 @@
 [![CI](https://github.com/reserp-ai/reserp-js/actions/workflows/ci.yml/badge.svg)](https://github.com/reserp-ai/reserp-js/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-**Google Search data, structured for scale.**
+The official minimal JavaScript and TypeScript client for [Reserp v2](https://reserp.ai/docs), a Google Search API with two response shapes:
 
-The official minimal JavaScript and TypeScript client for [Reserp](https://reserp.ai), a high-yield Google Search API and SERP API for high-volume, recurring production search workloads.
+- `urls()` / `search()` calls [`POST /v2/serp/urls`](https://reserp.ai/docs/urls) for a flat, page-ordered, deduplicated URL-and-text index.
+- `structured()` calls [`POST /v2/serp/structured`](https://reserp.ai/docs/structured) for typed result families, SERP features, and explicit positions.
 
-Reserp returns visible Google Search result blocks as structured JSON, including organic listings, news, carousels, sitelinks, pagination, and nested results in Google's response order. Start for free with no credit card required.
-
-[Website](https://reserp.ai) · [API documentation](https://reserp.ai/docs) · [OpenAPI 3.1](https://reserp.ai/openapi.json) · [Postman](https://documenter.getpostman.com/view/57501126/2sBYArSrqS) · [Pricing](https://reserp.ai/pricing)
+[Website](https://reserp.ai) · [API documentation](https://reserp.ai/docs) · [OpenAPI 3.1](https://reserp.ai/openapi.json) · [Postman](https://www.postman.com/reserp-ai/reserp-google-search-api) · [Pricing](https://reserp.ai/pricing)
 
 ## Design
 
-This package is a transparent wrapper over `POST /v1/serp`:
-
-- One SDK call sends exactly one API request.
-- The request body is the public API request body.
-- The return value is the native Fetch `Response` with a typed JSON body.
-- Status codes, response headers, success payloads, and error payloads remain unchanged.
-- Native Fetch options such as `signal`, `redirect`, and custom headers pass through.
-- The package has zero runtime dependencies and supports ESM and CommonJS.
-
-The client does not retry, back off, impose timeouts, build or validate Google URLs, follow pagination, transform responses, cache data, batch work, or control concurrency. Those decisions remain with the caller.
+Each SDK call makes exactly one API request and returns the native Fetch `Response` unchanged. The package adds no retry, timeout, URL-building, validation, pagination, transformation, cache, batch, queue, or concurrency policy. It has zero runtime dependencies and supports ESM and CommonJS.
 
 ## Installation
 
@@ -39,143 +29,86 @@ npm install @reserp/sdk
 
 Node.js 20 or later is required.
 
-## Quick start
+## URL index
 
 ```js
 import { Reserp } from "@reserp/sdk";
 
-const apiKey = process.env.RESERP_API_KEY;
-
-if (!apiKey) {
-  throw new Error("RESERP_API_KEY is not set");
-}
-
-const reserp = new Reserp({ apiKey });
-
-const response = await reserp.search({
+const reserp = new Reserp({ apiKey: process.env.RESERP_API_KEY });
+const response = await reserp.urls({
   url: "https://www.google.com/search?q=best+pizza+in+dubai&gl=ae&hl=en",
 });
-
 const data = await response.json();
 
-if (!data.ok) {
-  console.error(response.status, data.error, data.retryable, data.billed);
+if (data.ok) {
+  for (const item of data.urls) console.log(item.text, item.url);
 } else {
-  for (const result of data.results) {
-    console.log(result.text, result.url);
+  console.error(response.status, data.error, data.retryable, data.billed);
+}
+```
+
+`search()` is an alias for `urls()` and also uses the v2 URL-index endpoint.
+
+## Structured results
+
+```js
+const response = await reserp.structured({
+  url: "https://www.google.com/search?q=wireless+earbuds&gl=us&hl=en&tbm=shop",
+});
+const data = await response.json();
+
+if (data.ok) {
+  for (const result of data.results.organic) {
+    console.log(result.position, result.title, result.url);
+  }
+  for (const feature of data.features) {
+    console.log(feature.page_position, feature.type);
   }
 }
 ```
 
-Create an API key in the [Reserp dashboard](https://reserp.ai/dashboard). Keep API keys on your server; never embed one in browser or mobile code.
-
-## Production workloads at scale
-
-For bulk Google Search, recurring SERP collection, SEO monitoring, market intelligence, competitive research, and other business-critical data pipelines, place the API behind infrastructure that owns durability and throughput:
-
-```text
-producer -> durable queue -> workers with controlled concurrency -> Reserp API
-```
-
-Use Cloud Tasks, SQS, BullMQ, Celery, or an equivalent durable queue. Let one layer own retries and backoff, bound worker concurrency, respect `Retry-After`, persist job state and results, and design for possible duplicate queue delivery. These practices are identical whether a worker uses this transparent client or direct HTTP.
-
 ## Native transport control
 
-The second argument is passed to Fetch after the SDK supplies the method, authorization header, content type, and JSON body. Use native platform controls directly:
+The second argument is passed to Fetch after the SDK supplies the method, authorization header, content type, and JSON body:
 
 ```js
-const response = await reserp.search(
-  {
-    url: "https://www.google.com/search?q=semiconductor+manufacturing&gl=us&hl=en&tbs=qdr:w",
-  },
+const response = await reserp.urls(
+  { url: "https://www.google.com/search?q=semiconductors&gl=us&hl=en&tbs=qdr:w" },
   {
     signal: AbortSignal.timeout(20_000),
     redirect: "manual",
-    headers: {
-      "x-request-id": "your-job-id",
-    },
+    headers: { "x-request-id": "your-job-id" },
   },
 );
 ```
 
-You can also inject any Fetch-compatible transport:
+You can inject a Fetch-compatible transport with the constructor's `fetch` option. Transport failures remain native Fetch errors. HTTP error responses remain native responses; inspect the status, headers, and JSON body.
 
-```js
-const reserp = new Reserp({
-  apiKey,
-  fetch: yourFetchImplementation,
-});
-```
-
-Transport failures and cancellation reject with the native Fetch error. HTTP error responses do not become SDK exceptions; inspect the native status, headers, and API JSON body.
-
-## Direct HTTP equivalent
-
-The SDK call is equivalent to this direct API request:
+## Direct HTTP equivalents
 
 ```bash
-curl https://api.reserp.ai/v1/serp \
+curl https://api.reserp.ai/v2/serp/urls \
+  --request POST \
+  --header "Authorization: Bearer $RESERP_API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{"url":"https://www.google.com/search?q=photonic+computing&gl=us&hl=en"}'
+
+curl https://api.reserp.ai/v2/serp/structured \
   --request POST \
   --header "Authorization: Bearer $RESERP_API_KEY" \
   --header "Content-Type: application/json" \
   --data '{"url":"https://www.google.com/search?q=photonic+computing&gl=us&hl=en"}'
 ```
 
-Use either interface according to your application. Both expose the same Google Search API contract and leave workload behavior under your control.
+## Pagination and errors
 
-## Results and pagination
+Every successful response contains `pagination.next_url`. Send that URL back as the next request body's `url`; its presence does not guarantee that another page contains results. Do not calculate pagination from `urls.length` or a structured result-family length.
 
-Each result block may contain `text`, `url`, and `children`. `text` is optional: it is omitted when the block has no visible text. When present, it is a non-empty string containing visible text joined with newlines.
+Error bodies expose `error`, `retryable`, `billed`, and `billing_source`. If your application retries, use `retryable` as the authority and honor `Retry-After` on HTTP 429. The SDK never retries automatically.
 
-Pagination uses Google's organic-result offset, not the number of URLs in `results`. A response can contain URLs from many visible result types—including organic listings, news, carousels, sitelinks, and nested result blocks—so never derive the next offset from `results.length`.
+## Migrating from v1
 
-The `start` parameter selects the page by organic-result offset. Omit it or use `0` for the first page, `10` for the second, `20` for the third, and continue in increments of 10. Any other value returns a non-billable `400 invalid_request` response.
-
-Clients fetching pages independently or asynchronously can set `start` directly in each submitted Google Search URL:
-
-```js
-const thirdPageResponse = await reserp.search({
-  url: "https://www.google.com/search?q=photonic+computing&gl=us&hl=en&start=20",
-});
-const thirdPage = await thirdPageResponse.json();
-```
-
-`pagination.nextUrl` is provided as a convenience for clients advancing sequentially from a completed response:
-
-```js
-if (data.ok) {
-  const nextResponse = await reserp.search({
-    url: data.pagination.nextUrl,
-  });
-  const nextPage = await nextResponse.json();
-}
-```
-
-Standard Google Search parameters such as `q`, `gl`, `hl`, `tbm`, and `tbs` belong in the submitted Google URL. See the [API documentation](https://reserp.ai/docs) for the authoritative request contract.
-
-## Errors and billing signals
-
-API errors use stable JSON fields:
-
-```json
-{
-  "ok": false,
-  "error": "rate_limited",
-  "retryable": true,
-  "billed": false
-}
-```
-
-The API response is authoritative. Automatically retry only when `retryable` is `true`. For `429`, wait for the number of seconds in `Retry-After`; for other retryable errors, use exponential backoff with jitter. `billed` only confirms whether billing settled before the error response; it does not override `retryable`. Avoid blindly retrying an ambiguous transport failure whose billing outcome is unknown. The SDK does not make those decisions.
-
-## API resources
-
-- [Google Search API documentation](https://reserp.ai/docs)
-- [OpenAPI 3.1 document](https://reserp.ai/openapi.json)
-- [Postman API documentation](https://documenter.getpostman.com/view/57501126/2sBYArSrqS)
-- [Python client on GitHub](https://github.com/reserp-ai/reserp-python)
-- [Python package on PyPI](https://pypi.org/project/reserp/)
-- [Plans and pricing](https://reserp.ai/pricing)
+For URL-and-text workflows, replace the v1 recursive `results[]` tree with v2 `urls[]`. Other notable renames are `url` → `request.url`, `finalUrl` → `page.url`, `pagination.nextUrl` → `pagination.next_url`, and `billingSource` → `billing_source`. Ranking and SERP-analysis workflows should use `structured()` and the appropriate typed result family.
 
 ## License
 
