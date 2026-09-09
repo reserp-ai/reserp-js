@@ -1,35 +1,38 @@
 import type {
   ReserpOptions,
+  SearchReserpResponse,
   StructuredReserpResponse,
   SearchRequest,
   SearchRequestOptions,
-  UrlIndexReserpResponse,
 } from "./types.js";
 
-const DEFAULT_URL_INDEX_ENDPOINT = "https://api.reserp.ai/v2/serp/urls";
+const DEFAULT_SEARCH_ENDPOINT = "https://api.reserp.ai/v2/serp/search";
 const DEFAULT_STRUCTURED_ENDPOINT = "https://api.reserp.ai/v2/serp/structured";
 
 export class Reserp {
   readonly #apiKey: string;
-  readonly #urlIndexEndpoint: string | URL;
+  readonly #searchEndpoint: string | URL;
   readonly #structuredEndpoint: string | URL;
   readonly #fetch: typeof globalThis.fetch;
 
   constructor(options: ReserpOptions) {
     this.#apiKey = options.apiKey;
-    this.#urlIndexEndpoint =
-      options.urlIndexEndpoint ?? options.endpoint ?? DEFAULT_URL_INDEX_ENDPOINT;
+    this.#searchEndpoint =
+      options.searchEndpoint ??
+      options.urlIndexEndpoint ??
+      options.endpoint ??
+      DEFAULT_SEARCH_ENDPOINT;
     this.#structuredEndpoint =
       options.structuredEndpoint ?? DEFAULT_STRUCTURED_ENDPOINT;
     this.#fetch = options.fetch ?? globalThis.fetch;
   }
 
-  /** Send one request and return the v2 URL-index response unchanged. */
-  urls(
+  /** Send one request and return the v2 Search response unchanged. */
+  search(
     request: SearchRequest,
     options: SearchRequestOptions = {},
-  ): Promise<UrlIndexReserpResponse> {
-    return this.#request(this.#urlIndexEndpoint, request, options) as Promise<UrlIndexReserpResponse>;
+  ): Promise<SearchReserpResponse> {
+    return this.#request(this.#searchEndpoint, request, options) as Promise<SearchReserpResponse>;
   }
 
   /** Send one request and return the v2 structured response unchanged. */
@@ -40,12 +43,12 @@ export class Reserp {
     return this.#request(this.#structuredEndpoint, request, options) as Promise<StructuredReserpResponse>;
   }
 
-  /** Alias for urls(), retained as the default search workflow. */
-  search(
+  /** @deprecated Use search(). */
+  urls(
     request: SearchRequest,
     options: SearchRequestOptions = {},
-  ): Promise<UrlIndexReserpResponse> {
-    return this.urls(request, options);
+  ): Promise<SearchReserpResponse> {
+    return this.search(request, options);
   }
 
   #request(

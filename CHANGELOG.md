@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.0] - 2026-09-09
+
+- Adopt the stable `POST /v2/serp/search` contract and its `results[]` response.
+- Adopt the stable structured `blocks[]` model generated from the canonical OpenAPI schema.
+- Make `search()` the primary flat-results method and retain `urls()` as a deprecated compatibility alias.
+- Remove beta-only response fields from the public types and migration examples.
+
 ## [0.3.0] - 2026-09-07
 
 - Make the v2 URL index the default for `urls()` and its `search()` alias.
@@ -41,6 +48,7 @@ All notable changes to this project will be documented in this file.
 - One-based pagination and raw Google Search URL support.
 - Safe retries, timeouts, and abort signals.
 
+[0.4.0]: https://github.com/reserp-ai/reserp-js/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/reserp-ai/reserp-js/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/reserp-ai/reserp-js/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/reserp-ai/reserp-js/compare/v0.2.0...v0.2.1

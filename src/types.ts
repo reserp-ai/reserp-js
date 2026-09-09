@@ -1,223 +1,97 @@
-export type ReserpErrorCode =
-  | "invalid_request"
-  | "authentication_failed"
-  | "free_allowance_exhausted"
-  | "request_not_allowed"
-  | "rate_limited"
-  | "internal_error"
-  | "search_failed"
-  | "service_unavailable";
+import type { components, paths } from "./openapi.js";
 
-export type BillingSource = "free" | "prepaid" | null;
+export type OpenAPIComponents = components;
+export type OpenAPIPaths = paths;
 
-export interface SearchRequest {
-  /** Complete Google Search URL accepted by the public API. */
-  url: string;
-}
+export type Request = components["schemas"]["Request"];
+export type Pagination = components["schemas"]["Pagination"];
+export type ResultEntry = components["schemas"]["ResultEntry"];
+export type BillingSource = components["schemas"]["BillingSource"];
+export type SearchRequest = components["schemas"]["SearchRequest"];
+export type SearchResponse = components["schemas"]["SearchResponse"];
+export type ErrorResponse = components["schemas"]["ErrorResponse"];
+export type ReserpErrorCode = ErrorResponse["error"];
+export type Spelling = components["schemas"]["Spelling"];
+export type Page = components["schemas"]["Page"];
+export type Link = components["schemas"]["Link"];
+export type Sitelink = components["schemas"]["Sitelink"];
+export type Fact = components["schemas"]["Fact"];
+export type Section = components["schemas"]["Section"];
+export type StructuredPagination = components["schemas"]["StructuredPagination"];
 
-export interface SubmittedRequest {
-  url: string;
-}
+export type OrganicItem = components["schemas"]["OrganicItem"];
+export type OrganicBlock = components["schemas"]["OrganicBlock"];
+export type FeaturedSnippetItem = components["schemas"]["FeaturedSnippetItem"];
+export type FeaturedSnippetBlock = components["schemas"]["FeaturedSnippetBlock"];
+export type AdsItem = components["schemas"]["AdsItem"];
+export type AdsBlock = components["schemas"]["AdsBlock"];
+export type ShoppingItem = components["schemas"]["ShoppingItem"];
+export type ShoppingBlock = components["schemas"]["ShoppingBlock"];
+export type LocalItem = components["schemas"]["LocalItem"];
+export type LocalBlock = components["schemas"]["LocalBlock"];
+export type HotelsItem = components["schemas"]["HotelsItem"];
+export type HotelsBlock = components["schemas"]["HotelsBlock"];
+export type ImagesItem = components["schemas"]["ImagesItem"];
+export type ImagesBlock = components["schemas"]["ImagesBlock"];
+export type VideosItem = components["schemas"]["VideosItem"];
+export type VideosBlock = components["schemas"]["VideosBlock"];
+export type NewsItem = components["schemas"]["NewsItem"];
+export type NewsBlock = components["schemas"]["NewsBlock"];
+export type KnowledgeItem = components["schemas"]["KnowledgeItem"];
+export type KnowledgeBlock = components["schemas"]["KnowledgeBlock"];
+export type ProfilesItem = components["schemas"]["ProfilesItem"];
+export type ProfilesBlock = components["schemas"]["ProfilesBlock"];
+export type AiOverviewItem = components["schemas"]["AiOverviewItem"];
+export type AiOverviewBlock = components["schemas"]["AiOverviewBlock"];
+export type PeopleAlsoAskItem = components["schemas"]["PeopleAlsoAskItem"];
+export type PeopleAlsoAskBlock = components["schemas"]["PeopleAlsoAskBlock"];
+export type ThingsToKnowItem = components["schemas"]["ThingsToKnowItem"];
+export type ThingsToKnowBlock = components["schemas"]["ThingsToKnowBlock"];
+export type RelatedSearchesItem = components["schemas"]["RelatedSearchesItem"];
+export type RelatedSearchesBlock = components["schemas"]["RelatedSearchesBlock"];
+export type DiscussionsItem = components["schemas"]["DiscussionsItem"];
+export type DiscussionsBlock = components["schemas"]["DiscussionsBlock"];
+export type RecipesItem = components["schemas"]["RecipesItem"];
+export type RecipesBlock = components["schemas"]["RecipesBlock"];
+export type JobsItem = components["schemas"]["JobsItem"];
+export type JobsBlock = components["schemas"]["JobsBlock"];
+export type WebsitesItem = components["schemas"]["WebsitesItem"];
+export type WebsitesBlock = components["schemas"]["WebsitesBlock"];
+export type AppsItem = components["schemas"]["AppsItem"];
+export type AppsBlock = components["schemas"]["AppsBlock"];
+export type WeatherItem = components["schemas"]["WeatherItem"];
+export type WeatherBlock = components["schemas"]["WeatherBlock"];
+export type CurrencyItem = components["schemas"]["CurrencyItem"];
+export type CurrencyBlock = components["schemas"]["CurrencyBlock"];
+export type CalculatorItem = components["schemas"]["CalculatorItem"];
+export type CalculatorBlock = components["schemas"]["CalculatorBlock"];
+export type TimeItem = components["schemas"]["TimeItem"];
+export type TimeBlock = components["schemas"]["TimeBlock"];
+export type FinanceItem = components["schemas"]["FinanceItem"];
+export type FinanceBlock = components["schemas"]["FinanceBlock"];
+export type DictionaryItem = components["schemas"]["DictionaryItem"];
+export type DictionaryBlock = components["schemas"]["DictionaryBlock"];
+export type TranslateItem = components["schemas"]["TranslateItem"];
+export type TranslateBlock = components["schemas"]["TranslateBlock"];
+export type FlightsItem = components["schemas"]["FlightsItem"];
+export type FlightsBlock = components["schemas"]["FlightsBlock"];
+export type SportsItem = components["schemas"]["SportsItem"];
+export type SportsBlock = components["schemas"]["SportsBlock"];
+export type NavigationItem = components["schemas"]["NavigationItem"];
+export type NavigationBlock = components["schemas"]["NavigationBlock"];
+export type NoticeItem = components["schemas"]["NoticeItem"];
+export type NoticeBlock = components["schemas"]["NoticeBlock"];
+export type ConsentItem = components["schemas"]["ConsentItem"];
+export type ConsentBlock = components["schemas"]["ConsentBlock"];
+export type OtherItem = components["schemas"]["OtherItem"];
+export type OtherBlock = components["schemas"]["OtherBlock"];
+export type StructuredResponse = components["schemas"]["StructuredResponse"];
+export type StructuredBlock = StructuredResponse["blocks"][number];
+export type StructuredBlockType = StructuredBlock["type"];
 
-export interface Pagination {
-  /** Send this value back as request.url for the next page. */
-  next_url: string;
-}
-
-export interface Metadata {
-  captured_at: string;
-  parser_version: string;
-  warnings: string[];
-}
-
-export interface UrlEntry {
-  url: string;
-  text?: string;
-}
-
-export interface UrlIndexResponse {
-  ok: true;
-  request: SubmittedRequest;
-  page: { url: string };
-  urls: UrlEntry[];
-  pagination: Pagination;
-  metadata: Metadata;
-  billed: boolean;
-  billing_source: BillingSource;
-}
-
-export interface Fact {
-  key: string;
-  label?: string;
-  value: string | number | boolean;
-  unit?: string;
-  raw?: string;
-}
-
-export interface Link {
-  title: string;
-  url: string;
-  raw_url?: string;
-  snippet?: string;
-}
-
-export interface ResultBase {
-  position: number;
-  page_position: number;
-  title?: string;
-  url?: string;
-  raw_url?: string;
-  displayed_url?: string;
-  domain?: string;
-  source?: string;
-  date?: string;
-  snippet?: string;
-  image_url?: string;
-  facts?: Fact[];
-}
-
-export interface WebResult extends ResultBase {
-  kind: "web_result";
-  title: string;
-  url: string;
-  sitelinks?: Link[];
-}
-
-export interface AdResult extends ResultBase {
-  kind: "search_ad" | "product_ad" | "local_ad";
-  title: string;
-  url: string;
-  placement: "top" | "inline" | "bottom" | "right" | "unknown";
-  advertiser?: string;
-  merchant?: string;
-  price?: string;
-  old_price?: string;
-  rating?: number;
-  review_count?: number;
-  delivery?: string;
-  thumbnail_url?: string;
-}
-
-export interface ImageResult extends ResultBase {
-  kind: "image_result";
-  image_url: string;
-  thumbnail_url?: string;
-  original_width?: number;
-  original_height?: number;
-}
-
-export interface ProductResult extends ResultBase {
-  kind: "product_result";
-  title: string;
-  merchant?: string;
-  price?: string;
-  currency?: string;
-  old_price?: string;
-  rating?: number;
-  review_count?: number;
-  delivery?: string;
-}
-
-export interface NewsResult extends ResultBase {
-  kind: "news_result";
-  title: string;
-  url: string;
-  publisher?: string;
-  publisher_logo_url?: string;
-}
-
-export interface VideoResult extends ResultBase {
-  kind: "video_result";
-  title: string;
-  url: string;
-  publisher?: string;
-  duration?: string;
-  thumbnail_url?: string;
-}
-
-export interface PlaceResult extends ResultBase {
-  kind: "place_result";
-  title: string;
-  place_id?: string;
-  category?: string;
-  address?: string;
-  phone?: string;
-  hours?: string;
-  rating?: number;
-  review_count?: number;
-  latitude?: number;
-  longitude?: number;
-  website?: string;
-}
-
-export interface FeatureItem {
-  position: number;
-  title?: string;
-  text?: string;
-  url?: string;
-  raw_url?: string;
-  source?: string;
-  date?: string;
-  image_url?: string;
-  facts?: Fact[];
-}
-
-export interface Feature {
-  type: string;
-  page_position: number;
-  title?: string;
-  text?: string;
-  items: FeatureItem[];
-  facts: Fact[];
-}
-
-export interface Page {
-  state: "results" | "no_results" | "consent_only" | "unsupported";
-  surface: "web" | "images" | "shopping" | "news" | "videos" | "local" | "other";
-  url: string;
-  title?: string;
-  overlays: "consent"[];
-  spelling?: {
-    kind: "showing_results_for" | "did_you_mean" | "original_query";
-    query: string;
-    url?: string;
-  };
-}
-
-export interface Results {
-  organic: WebResult[];
-  ads: AdResult[];
-  images: ImageResult[];
-  shopping: ProductResult[];
-  news: NewsResult[];
-  videos: VideoResult[];
-  local: PlaceResult[];
-}
-
-export interface StructuredResponse {
-  ok: true;
-  schema_version: "2.0";
-  request: SubmittedRequest;
-  page: Page;
-  results: Results;
-  features: Feature[];
-  pagination: Pagination;
-  metadata: Metadata;
-  billed: boolean;
-  billing_source: BillingSource;
-}
-
-export interface ErrorResponse {
-  ok: false;
-  error: ReserpErrorCode;
-  retryable: boolean;
-  billed: boolean;
-  billing_source: BillingSource;
-}
-
-export type UrlIndexAPIResponse = UrlIndexResponse | ErrorResponse;
+export type SearchAPIResponse = SearchResponse | ErrorResponse;
 export type StructuredAPIResponse = StructuredResponse | ErrorResponse;
-export type APIResponse = UrlIndexResponse | StructuredResponse | ErrorResponse;
+export type APIResponse = SearchResponse | StructuredResponse | ErrorResponse;
 
 /** Native Fetch options, excluding the method and JSON body owned by the API. */
 export type SearchRequestOptions = Omit<RequestInit, "body" | "method">;
@@ -228,14 +102,16 @@ export interface ReserpResponse<T extends APIResponse = APIResponse> extends Res
   json(): Promise<T>;
 }
 
-export type UrlIndexReserpResponse = ReserpResponse<UrlIndexAPIResponse>;
+export type SearchReserpResponse = ReserpResponse<SearchAPIResponse>;
 export type StructuredReserpResponse = ReserpResponse<StructuredAPIResponse>;
 
 export interface ReserpOptions {
   apiKey: string;
-  /** Legacy alias for urlIndexEndpoint, retained for test and proxy compatibility. */
+  /** Legacy alias for searchEndpoint, retained for test and proxy compatibility. */
   endpoint?: string | URL;
-  /** Override the v2 URL-index endpoint, primarily for testing or a local proxy. */
+  /** Override the v2 Search endpoint, primarily for testing or a local proxy. */
+  searchEndpoint?: string | URL;
+  /** @deprecated Use searchEndpoint. */
   urlIndexEndpoint?: string | URL;
   /** Override the v2 structured endpoint, primarily for testing or a local proxy. */
   structuredEndpoint?: string | URL;
@@ -243,7 +119,15 @@ export interface ReserpOptions {
   fetch?: typeof globalThis.fetch;
 }
 
-/** @deprecated Use UrlEntry. */
-export type Result = UrlEntry;
-/** @deprecated Use UrlIndexResponse. */
-export type SearchResponse = UrlIndexResponse;
+/** @deprecated Use Request. */
+export type SubmittedRequest = Request;
+/** @deprecated Use ResultEntry. */
+export type Result = ResultEntry;
+/** @deprecated Use ResultEntry. */
+export type UrlEntry = ResultEntry;
+/** @deprecated Use SearchResponse. */
+export type UrlIndexResponse = SearchResponse;
+/** @deprecated Use SearchAPIResponse. */
+export type UrlIndexAPIResponse = SearchAPIResponse;
+/** @deprecated Use SearchReserpResponse. */
+export type UrlIndexReserpResponse = SearchReserpResponse;
