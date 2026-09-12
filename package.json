@@ -1,6 +1,6 @@
 {
   "name": "@reserp/sdk",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Official minimal JavaScript and TypeScript SDK for the Reserp Google Search API v2",
   "license": "MIT",
   "author": {

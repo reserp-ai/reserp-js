@@ -97,6 +97,13 @@ export interface components {
             ok: false;
             /** @enum {unknown} */
             error: "invalid_request" | "authentication_failed" | "free_allowance_exhausted" | "request_not_allowed" | "rate_limited" | "internal_error" | "search_failed" | "service_unavailable";
+            /** @description Explanation of the problem and how to address it. Wording may change; use error and retryable for application logic. */
+            message: string;
+            /**
+             * Format: uri
+             * @description Link to the relevant documentation page.
+             */
+            doc_url: string;
             /** @description Whether the request can be retried. */
             retryable: boolean;
             /** @description Whether the request consumed account usage. */

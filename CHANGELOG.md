@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.1] - 2026-09-12
+
+- Add the documented `message` and `doc_url` fields to the error response type.
+- Explain error diagnostics and best-effort structured extraction in the README.
+
 ## [0.4.0] - 2026-09-09
 
 - Adopt the stable `POST /v2/serp/search` contract and its `results[]` response.

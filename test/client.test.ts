@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { Reserp } from "../src/index.js";
-import type { SearchResponse, StructuredResponse } from "../src/index.js";
+import type { ErrorResponse, SearchResponse, StructuredResponse } from "../src/index.js";
 
 const SEARCH_SUCCESS: SearchResponse = {
   ok: true,
@@ -128,10 +128,12 @@ describe("Reserp", () => {
         {
           ok: false,
           error: "rate_limited",
+          message: "Request rate limit exceeded.",
+          doc_url: "https://reserp.ai/docs/errors",
           retryable: true,
           billed: false,
           billing_source: null,
-        },
+        } satisfies ErrorResponse,
         429,
         { "retry-after": "15" },
       ),
@@ -147,6 +149,8 @@ describe("Reserp", () => {
     await expect(response.json()).resolves.toEqual({
       ok: false,
       error: "rate_limited",
+      message: "Request rate limit exceeded.",
+      doc_url: "https://reserp.ai/docs/errors",
       retryable: true,
       billed: false,
       billing_source: null,

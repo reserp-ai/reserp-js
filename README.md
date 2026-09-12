@@ -13,7 +13,7 @@
 The official minimal JavaScript and TypeScript client for [Reserp v2](https://reserp.ai/docs), a Google Search API with two stable response shapes:
 
 - `search()` calls [`POST /v2/serp/search`](https://reserp.ai/docs/search) for flat, page-ordered, deduplicated results in `results[]`.
-- `structured()` calls [`POST /v2/serp/structured`](https://reserp.ai/docs/structured) for typed, page-ordered SERP blocks in `blocks[]`.
+- `structured()` calls [`POST /v2/serp/structured`](https://reserp.ai/docs/structured) for best-effort extraction of typed, page-ordered SERP blocks in `blocks[]`.
 
 [Website](https://reserp.ai) · [API documentation](https://reserp.ai/docs) · [OpenAPI 3.1](https://reserp.ai/openapi.json) · [Postman](https://www.postman.com/reserp-ai/reserp-google-search-api) · [Pricing](https://reserp.ai/pricing)
 
@@ -109,7 +109,7 @@ curl https://api.reserp.ai/v2/serp/structured \
 
 Every successful response contains `pagination.next_url`. Send that URL back as the next request body's `url`; its presence does not guarantee that another page contains results. Do not calculate pagination from `results.length`, `blocks.length`, or any block's item count.
 
-Error bodies expose `error`, `retryable`, `billed`, and `billing_source`. If your application retries, use `retryable` as the authority and honor `Retry-After` on HTTP 429. The SDK never retries automatically.
+Error bodies expose `error`, `message`, `doc_url`, `retryable`, `billed`, and `billing_source`. Use `message` and `doc_url` for diagnostics; message wording may change, so branch on the stable `error` code and `retryable` flag. If your application retries, use `retryable` as the authority and honor `Retry-After` on HTTP 429. The SDK never retries automatically.
 
 ## Migrating
 
